@@ -1,0 +1,1743 @@
+---
+title: "SMI610 day 1"
+author: "Mark Taylor"
+date: "28/06/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## What is this document?
+
+This is a document that I've put together in R Markdown to accompany the day-long session on data visualisation that forms part of SMI610: Social Analytics & Visualisation. It's a single long document, which I've aimed to break up through the use of headings to explain which bit of the session each section refers to.
+
+It's likely that we won't get through the entire handout during the course of the session. **This is fine.** The plan is to start at the beginning, and keep going through both the lecture and workshop materials at whatever pace is realistic. We might also skip bits in the middle, and jump ahead. You can then work through the remainder of this handout at your own pace. (Or not: it's up to you which bits of this material you want to work with and which you want to leave.)
+
+This document is a mix of text that looks like this, and
+
+```{r, eval = FALSE, message = FALSE, warning = FALSE}
+text that looks like this
+```
+
+When text looks like this, it means you should treat it as prose like in any other handout, textbook, etc. When
+
+```{r, eval = FALSE}
+text looks like this
+```
+
+it means it's an R command that you should run. 
+
+## Some important context
+
+I'm going to show you **one way** of doing particular kinds of data visualisation. I'm not going to cover every kind of visualisation it's possible to do, nor am I going to show you each and every way it's possible to execute each one. This is deliberate; visualisation's a broad church, and I wouldn't argue that what I'm showing you is the *best* way to do everything; it's a way I'm happy with.
+
+This has a few implications. One is that when you Google how to do things, you might recognise what you see and identify a small difference between what you can already do and what you want to do; alternatively, what you see might look completely alien compared with what you've already seen. If this happens, don't panic -- you can either try adopting the approach to syntax you've found, or you can keep Googling until you find something that looks more familiar.
+
+I know that you've already been visualising data in other modules that you've been taking, probably using different packages and different languages. In this module, I'll try to persuade you that the **ggplot2** framework is a great way to think about visualisation in general, with graphics all conforming to a general grammar rather than consisting of a bunch of different types of things. However, if you prefer other languages and other packages, this shouldn't mean that this session is a waste; the hope is that the content extends beyond step-by-step instructions of how to build specific graphics.
+
+Another implication is that you won't always have all the *packages* that we're specifying in here. If you see a command that looks something like this, and get the following error:
+
+```{r, eval = FALSE}
+library(something)
+Error in library(something) : there is no package called ‘something’
+```
+
+all you need to do is type the equivalent of this:
+
+```{r, eval = FALSE}
+install.packages("something")
+```
+
+and rerun the original command, you should be OK. 
+
+## Getting started
+
+The main thing we're going to use during today's session is the **ggplot2** package, which is a package for the visualisation of data using the statistical programming language **R**. (In case you'd missed that, we're also using the R programming language.) 
+
+**ggplot2** is part of the **tidyverse** group of packages, which fit together nicely for a particular approach to programming. It's not for everyone (google "tidyverse or base R" for some discussion on why people prefer not to use it), but it'll give you a flavour for how this stuff can work, and I find it more user-friendly than other approaches to programming. 
+
+The first thing we'll do is extract the .zip file that accompanies this handout. (This'll be obvious in class.) We'll then open the .Rproj file, which should open an RStudio window, depending on how effectively everything's been installed. Finally, we'll open RStudio, and open a new R script file with Ctrl-Shift-N (or Cmd-Shift-N if you're on an Apple machine) *which we'll keep saving*. You can then load the tidyverse like so (type into your script editor, then hit Ctrl/Cmd-Enter to run it -- give me a shout if you have any problems):
+
+```{r, eval = FALSE, message = FALSE, warning = FALSE}
+library(tidyverse)
+```
+
+You should get some messages in your **console**. If they look similar to what I get, this isn't a big deal and you shouldn't worry about it; if they look radically different, shout and I'll come and have a look.
+
+### Comment your code
+
+We'll be writing a bunch of code today. I won't be writing many comments, because I'll be trying to show you how to do stuff and talking at the same time. I **very strongly recommend** that **every single** line of code that you write is accompanied by at least some comments that explain what's going on in them. 
+
+This isn't for your benefit today -- you can remember what you're doing now, because you're doing it now! -- but for future you. If you come back to a load of messy code with no annotation of what's going on or why, it's like starting from scratch. If you've explained what you're doing, you can pick up where you left off. You can introduce a comment using the hash key: \#.
+
+## Let's make some graphs
+
+Let's make some graphs!
+
+(nb: **this whole section accompanies me talking through what we're doing in the handout in more detail. *Please make notes* on what I'm talking about, and what we're doing.**)
+
+Having loaded the **tidyverse**, you've also loaded **ggplot2**, which comes with some existing datasets in it. Let's make some graphs.
+
+The **economics** data contains some information about, amongst other things, the number of people in the US who were unemployed over time. Let's make a graph of how it's changed.
+
+```{r, eval = FALSE}
+ggplot(data = economics) + 
+  aes(x = date, y = unemploy)+
+  geom_line()
+```
+
+The **midwest** data contains some information about different counties in the states of the Midwest of the US. Let's make a graph of how many counties there are in each state in the Midwest.
+
+```{r, eval = FALSE}
+ggplot(data = midwest) +
+  aes(x = state)+
+  geom_bar()
+```
+
+The **diamonds** data contains information about diamonds sold in the US. Let's make a graph of how much they each sold for.
+
+```{r, eval = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price) +
+  geom_histogram()
+```
+
+...and another one...
+
+```{r, eval = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price)+
+  geom_density()
+```
+
+...and another one.
+
+```{r, eval = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price)+
+  geom_freqpoly()
+```
+
+Let's also use the **diamonds** data to make a graph of how diamond prices vary by what colour they are...
+
+```{r, eval = FALSE}
+
+ggplot(data = diamonds) +
+  aes(x = color, y = price)+
+  geom_boxplot()
+```
+
+...and another one.
+
+```{r, eval = FALSE}
+ggplot(data = diamonds) +
+  aes(x = price, color = color) +
+  geom_density()
+```
+
+Finallly, the **mpg** data contains information on cars, including the miles per gallon they get on highways, and their engine displacement. (I don't know anything about cars). Let's look at the relationship between those two variables.
+
+```{r, eval = FALSE}
+ggplot(data = mpg) +
+  aes(x = displ, y = hwy) +
+  geom_point()
+```
+
+### Now you
+
+Please load some data on Pokemon, as follows:
+
+```{r, eval = FALSE}
+pokemon <- read_csv("pokemon.csv")
+```
+
+In loading this dataset, the read_csv() command will give you some information about it, including what the variables are called and what class they are. 
+
+Now, please make the following graphs:
+
+- a graph showing how many Pokemon there are of each different type
+- a graph showing the distribution of HP among Pokemon
+- a graph showing the relationship between Attack and Defense among Pokemon
+- a graph showing the relationship between HP and type among Pokemon
+
+(Please note that I don't actually expect you to know anything about Pokemon. If you do, that's a bonus; if you don't, it shouldn't be a problem.)
+
+## Extending bar charts
+
+There's a lot more that we can do than we've seen so far, and we're not going to be able to cover everything. But it's useful to be able to manipulate and customise bar charts so they look how we want. A lot of this involves manipulating the *data* in the first place, so that the manipulation of the graphics is easy.
+
+Let's say we're interested in revisiting the earlier Pokemon data (I'm relying on you not having read ahead this far earlier). Let's redraw the graph of how many Pokemon there are in each type.
+
+```{r, eval = FALSE}
+ggplot(data = pokemon) +
+  aes(x = Type) +
+  geom_bar()
+```
+
+The first basic problem here is that this is hard to read; a big reason for this is that we've got a lot of bars, and not a lot of space to put the labels. 
+
+My preferred solution for this is to rotate the graph by 90 degrees. We can do this like so:
+
+```{r, eval = FALSE}
+ggplot(data = pokemon) + 
+  aes(x = Type)+
+  geom_bar()+
+  coord_flip()
+```
+
+This is a bit more like it. You'll remember we discussed the coordinate system as an element of the grammar of graphics; here, we're specifying that explicitly, by **flipping** the coordinates.
+
+It used to be the case that, if you were drawing a bar chart, you had to put the categorical variable on the x-axis, and manually flip the axes as above if you wanted to change this. However, since a recent(-ish) update to ggplot2, this is no longer the case. We can streamline things as follows:
+
+```{r, eval = FALSE}
+ggplot(data = pokemon) + 
+  aes(y = Type)+
+  geom_bar()
+```
+
+### Extending bar charts, with some manipulation
+
+However, what happens if we want to find the average HP for Pokemon of each type, rather than just how many there are?
+
+We can do this by introducing the **pipe**, which is probably the most distinctive feature of the **tidyverse**: if you see pipes, you're probably reading the code of someone who's keen on tidyverse. The pipe can be read as "and then": if you see a series of commands linked by pipes, you can follow them in order to see the sequence of what's going on. (I think of it as an alternative to a series of nested brackets, where you look at what's in the innermost bracket and work out; for me, it's much easier to follow).
+
+(As of R version 4.1.0, R now has a native pipe. I've been using **tidyverse** for years, so I'm pretty familiar with the tidyverse pipe; R's native pipe is new and I don't have experience of it, hence sticking with the tidyverse pipe. As I understand it you should be able to substitute the native pipe for the tidyverse pipe throughout, but don't quote me on that.)
+
+In this instance, we'll be using commands from the **dplyr** package. Let's draw a graph of the mean Attack for each type of Pokemon.
+
+```{r, eval = FALSE}
+pokemon %>% 
+  group_by(Type) %>% 
+  summarise(HPB = mean(HP)) %>% 
+  ggplot() +
+  aes(y = Type, x = HPB) +
+  geom_col() 
+```
+
+OK, let's break this down step-by-step:
+
+- on the first line, we're specifying what data we're using;
+- on the second line, we're using the **group_by()** command to specify that we're grouping the data by some variable. As we're interested in how **HP** varies by **Type**, we're grouping by **Type**;
+- on the third line, we're temporarily generating a new variable HPB with the **summarise** command, which is the mean of HP. R knows to generate a mean of HP by Type, rather than by some other variable, because of the previous line;
+- on the fourth line, we're calling ggplot. Here, we don't have to specify what data we're using, as that's established by the previous lines. We're specifying the aesthetic mappings **type** on the y-axis, and **HPB** (our new variable) on the x-axis;
+- on the fifth line, we're specifying the geometric object. Here, we're using **geom_col** rather than **geom_bar** because they have different default **statistical transformations** -- geom_bar uses *count*, while geom_col uses *identity*
+
+One problem here, though: the order of the bars doesn't really make sense. It's in alphabetical order, which probably isn't what we want. Wouldn't it look better if it were in order, with the type with the highest average HP at the top? Let's do that.
+
+```{r, eval = FALSE}
+pokemon %>% 
+  group_by(Type) %>% 
+  summarise(AttackB = mean(Attack)) %>% 
+  mutate(Type = fct_reorder(Type, AttackB)) %>% 
+  ggplot() +
+  aes(y = Type, 
+             x = AttackB) +
+  geom_col()
+
+```
+
+Here, we've changed the *Type* variable. While earlier the categories were in alphabetical order, we've used the **mutate** command to transform the variable in some way; within the mutate bracket, we've used the **fct_reorder** command to change the order of these categories. Specifically, we've ranked them according to another variable, *AttackB*, so that the bars go from high to low. 
+
+(If you're interested: the **fct_reorder** command is part of the **forcats** package, so named because it's a way of manipulating *factors*, and forcats is an anagram of factors. It's another part of the tidyverse, and it's well-documented in the R for Data Science book.)
+
+### Extending bar charts, with some filtering
+
+Let's load some new data.
+
+```{r, eval = FALSE}
+nobel <- 
+  read_csv("nobel_winners.csv")
+```
+
+This is some data about Nobel Prize winners, which I've downloaded from the R for Data Science GitHub page [here](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-05-14). 
+
+This dataset, and the accompanying dataset on publications which can be found at the same location, has been the subject of a lot of analysis. Here, we're going to focus fairly narrowly on the birth countries of Nobel Prize winners, and the specific prizes they've won.
+
+Let's start by looking at the names of the variables in the dataset.
+
+```{r, eval = FALSE}
+names(nobel)
+```
+
+and, on this basis, let's draw a graph of the numbers of Nobel winners from each country.
+
+```{r, eval = FALSE}
+
+ggplot(data = nobel) +
+  aes(y = birth_country) +
+  geom_bar()
+
+```
+
+This isn't useful. We can more-or-less make out the fact that the United States has the most Nobel Prize winners, but there's clearly a lot of very short bars: countries where there's maybe one or two winners. We can also more-or-less make out that a number of Nobel winners were born in countries that no longer exist (at least in the sense of being sovereign states that are members of the United Nations in their own right).
+
+The first thing we're going to do is **filter** the data so that we're just looking at the countries where at least ten Nobel Prize winners were born. The **filter** command allows us to look at a subset of the data, rather than the whole dataset, and will come up pretty often.
+
+```{r, eval = FALSE}
+nobel %>% 
+  group_by(birth_country) %>% 
+  mutate(total_from_country = n()) %>% 
+  filter(total_from_country > 9) %>% 
+  ggplot() +
+  aes(y = birth_country) + 
+  geom_bar() 
+```
+
+Again, let's run thorugh this line-by-line:
+
+- we start with the **nobel** dataset
+- we then **group_by** (you saw this in the previous section) the **birth_country** variable
+- we then use the **mutate** command, which is what we use when we want to generate a new varaible. We want to call this new variable **total_from_country**, which is on the left-hand-side of the equals sign; on ther right-hand-side, we use the **n()** command to indicate that we want total_from_country to be equivalent to the number of times each birth_country appears in the dataset (because that's the variable where we used group_by)
+- we then **filter** based on this variable: we only want countries with more than 10 occurrences, so we filter using the greater than sign (you can also use ==, etc)
+- we then pipe into ggplot
+- finally, we put birth_country on the y-axis, and add a bar as our geometric object
+
+Straight away we can see two problems. The first is some inconsistency in the data -- there's an entry for Germany (Poland), which reflects what we'll euphemistically refer to as political changes. The second is that we've got NAs in the data, reflecting the fact that some Nobel Prizes have gone to organisations rather than people. The second issue is quicker to deal with, so let's cut our NAs by inserting a **na.omit** command between our **filter** and our **ggplot**:
+
+```{r, eval = FALSE}
+nobel %>% 
+  group_by(birth_country) %>% 
+  mutate(total_from_country = n()) %>% 
+  filter(total_from_country > 9) %>% 
+  na.omit %>% 
+  ggplot() +
+  aes(y = birth_country) + 
+  geom_bar() 
+```
+
+The trickier bit is harmonising our country variable. This next bit is a bit more advanced than I'd planned this section of the workshop to be; however, this is roughly how doing this kind of work tends to go, so we might as well do something realistic.
+
+Some sweet angel has written a package to harmonise the ways that countries are denoted in a wide range of different contexts, and we're going to make the most of that. So let's install and load the **countrycode** package.
+
+```{r, eval = FALSE}
+install.packages("countrycode")
+library(countrycode)
+```
+
+...and let's look at our country variable to see how it works.
+
+```{r, eval = FALSE}
+nobel$birth_country
+```
+
+It looks like, where the name of the country someone was born in at the time they were born there and its name now aren't the same, the current name is included in brackets. When we're processing data in this kind of context, we often run into issues without an ideal solution, where calling something "data cleaning" might in fact be pushing political issues under the radar. For the moment, let's generate a new variable for the country someone was born in, so that if there's a country contained in brackets, it's what we use.
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  select(birth_country_clean,
+         birth_country)
+```
+
+OK, so a couple of new things here.
+
+- We're starting with the dataset, as before.
+- We're then making a new variable with the **mutate** command. Specifically, we're generating a new variable called birth_country_brackets using the **str_extract** command (from the **stringr** package, which is another part of the tidyverse dedicated to working with strings). We're extracting the part of the string in birth_country that's contained within brackets. (We have a tonne of different brackets options just in case.)
+- We're then making a new variable called birth_country_clean, using the if_else command. There's one condition here, which is whether or not birth_country_brackets is NA or not. That variable's NA where there weren't any brackets, so we want to return the original birth_country in those cases. However, where it isn't NA, we want to return the content of the brackets -- which is our new variable, birth_country_brackets.
+- Finally, we're selecting our old and new birth country variables to see how they look. If there's any issues, we should be able to spot them.
+
+Having done this, let's use the countrycode package to harmonise all our different measures of country names, and to group them into global regions. Again, we're using the **mutate** command to generate a new variable; in this case, we're calling it birth_region. The **countrycode** command asks us for three things: the variable we're starting with (birth_country_clean), the kind of thing we're converting from (country.name), and the kind of thing we're converting to (region).
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "region")) 
+```
+
+This has given us a warning that there's some ambiguity in a couple of cases: Northern Ireland and Scotland. Again, this is an example where something that we might call "data cleaning" actually involves us making what are effectively political decisions. In response to this warning, I'm going to use the fct_recode command to group those with the other Nobel winners from the UK. I'm also going to filter out any cases where we don't have information on birth_region (again because they're organisations, rather than people), and finally start drawing a graph.
+
+```{r, eval = FALSE}
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean =
+           fct_recode(birth_country_clean,
+                      "United Kingdom" =
+                        "Scotland",
+                      "United Kingdom" =
+                        "Northern Ireland")) %>%
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "region")) %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = birth_region) + 
+  geom_bar()
+```
+
+This is illuminating. It shows us that the Europe and Central Asia region has received hugely more Nobel Prizes than other regions.
+
+However, this feels inadequate. Maybe the problem is that the **region** variable is too crude, and we want something intermediate. At the same time, there's some categories that already have relatively few winners in, and we don't want to break those down further. We can do this by combining two different measures.
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category))) +
+  geom_bar() 
+```
+
+Again, there is a huge amount here, but nothing beyond you. Let's go through it step-by-step.
+
+- we start with the dataset
+- we generate our birth_country_brackets variable using str_sub and mutate, to extract data where borders have changed
+- we generate our birth_country_clean variable, combining our original birth_country variable and our new birth_country_brackets variable
+- we group Scotland and Northern Ireland with the UK, using fct_recode
+- we generate a variable called birth_continent, converting birth_country into continent (using the countrycode command)
+- we generate another variable called birth_region, using a simialr technique, but varying the contents of the **destination**
+- using group_by and mutate, we generate a variable counting the number of times someone from each region has won a Nobel Prize
+- on the basis of that, we use mutate and if_else to generate a overall variable -- eventual_category -- where we use region if it occurs more than 50 times, but continent otherwise
+- we filter out the cases where birth region is missing
+- we pipe into ggplot
+- we put that eventual_category variable on the y axis, using fct_infreq() and fct_rev to put it in descending order
+- we draw a bar chart
+
+One stray issue. It's odd that "Europe" is left over, as is "Americas", given that regions of these continents are included. This is because there's some regions in those continents with fewer than 50 Nobel winners. Let's clarify which regions those are.
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category))) +
+  geom_bar() 
+```
+
+Like I said, this is a huge faff, but this is just how this tends to work in execution. 
+
+### Extending bar charts, with some colour
+
+We can do more with this, though. How does this vary by specific Nobel prize?
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category)),
+      fill = category) +
+  geom_bar() 
+```
+
+
+#### Playing around with colour
+
+OK, so we've got a graph. However, it's not that easy to interpret. Some patterns are obvious, but others are less clear due to the layout of the graph; some prizes seem to have been won more than others, probably reflecting collective awards, making the relative frequencies of the categories by region harder to understand. Let's have a look at some **position adjustments**.
+
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category)),
+      fill = category) +
+  geom_bar(position = "dodge") 
+```
+
+What we've done here is changed the **position adjustment** to **dodge**: the bars are now clustered together, rather than on top of one another. You can see some differences here more vividly. That's the only change we've made to the code.
+
+
+```{r, eval = FALSE}
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category)),
+      fill = category) +
+  geom_bar(position = "fill") 
+```
+
+Here, as an alternative, we've changed the position adjustment to **fill**. In this instance, we're just looking at the difference in the relative proportions of each category of prize awarded in each different part of the world, regardless of the overall number of winners.
+
+### Task
+
+- Please draw a bar chart of the frequency of award of the different Nobel categories, where parts of the world are used to colour in the bars. Do so however you think makes the most sense. What does it show?
+- Please draw a bar chart of the different types of Pokemon, according to which generation the Pokemon were introduced in. Which type of Pokemon were most common in the first generation? In which generation was the largest fraction of Poison-type Pokemon introduced?
+
+### Extending bar charts, with facets
+
+Let's revisit our bar chart of the geographical distribution of Nobel prizes.
+
+```{r, eval = FALSE}
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category))) +
+  geom_bar() 
+```
+
+We tried a few different approaches to understanding the distribution of prizes by category in each different part of the world, each of which had strengths and weaknesses. One thing we didn't try was **faceting**: drawing a separate version of the graph for each category This isn't hard to do: let's do it here.
+
+```{r, eval = FALSE}
+
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category))) +
+  geom_bar() +
+  facet_wrap(~ category)
+```
+
+The new part here is the final line, **facet_wrap**. The way facet_wrap works is that the bracket contains a tilde (~), which is followed by the variable you want to facet by: in this case, the category (You can also use **facet_grid**, where you can facet by two separate categorical variables.)
+
+One issue here is that, because Literature and Peace have relatively fewer winners overall, it's hard to make out what's going on in those categories. We can tweak this by adapting the **scales**, like so: 
+
+```{r, eval = FALSE}
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category))) +
+  geom_bar() +
+  facet_wrap(~ category, scales = "free")
+```
+
+This is easier to interpret, although it has its own problems. It depends what message you're trying to convey and understand.
+
+It's worth reflecting more generally on what this figure shows, and what kinds of decisions we've made in generating it. In particular, it's worth reflecting on how different decisions could have led to different outcomes.
+
+## Extending scatterplots
+
+A scatterplot that you often see is the relationship between GDP per capita and life expectancy, and how it's changed over time. This can be found in the gapminder data; let's start by drawing it. (It's likely that you've seen this data before.)
+
+```{r, eval = FALSE}
+library(gapminder)
+ggplot(data = gapminder) +
+  aes(x = gdpPercap, y = lifeExp) +
+  geom_point()
+```
+
+This looks OK, but it's got some issues. The major issue is the skew in the GDP per capita variable; the vast majority of observations are on the left-hand side of the graph, making it difficult to interpret patterns. We can start dealing with this by **log transforming** the GDP per capita variable. There's a couple of ways to do this; here's one example.
+
+```{r, eval = FALSE}
+ggplot(gapminder) +
+  aes(x = log(gdpPercap), y = lifeExp) +
+  geom_point()
+```
+
+Here, we've log transformed an existing variable in the aes() bracket. Alternatively, we could have generated a new variable through piping, like so:
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() +
+  aes(x = log_gdp_per_cap, y = lifeExp) +
+  geom_point()
+```
+
+This gives you exactly the same thing, with the only difference being the label on the x-axis. I prefer doing things this way round, keeping the ggplot command itself relatively simple, but different people prefer doing things in different ways.
+
+Another relevant approach is to tweak the **scale** itself, like so:
+
+```{r, eval = FALSE}
+  ggplot(gapminder) + 
+  aes(x = gdpPercap, y = lifeExp) +
+  geom_point()+
+  scale_x_log10()
+```
+
+This is helpful as logs to the base 10 are often easier than logs to the base e. (We'll revisit this when we come to tidying up graphs later on.)
+
+One thing we can do to extend this graph is to summarise some of the information visually, through adding a **smoothing function**. This is easy to do in ggplot2 -- it's just another geometric object. You can add it like so.
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() +
+  aes(x = log_gdp_per_cap, y = lifeExp) +
+  geom_point()+
+  geom_smooth()
+```
+
+This looks OK, but by adding a LOESS curve this graph is now a bit overcomplicated. (What do you think is going on right over the right hand side of the graph?) We can address this by tweaking the smoothing function by turning it into a linear regression line instead. We do this by specifying the method as **lm** in the bracket, like so:
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() +
+  aes(x = log_gdp_per_cap, y = lifeExp) +
+  geom_point()+
+  geom_smooth(method = "lm")
+```
+
+And if you're worried that this is distorted by countries with small populations, we can add population size to our points to make it easier to interpret.
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() +
+  aes(x = log_gdp_per_cap, y = lifeExp, size = pop) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+We now have an issue whereby the points are overlapping each other fairly heavily on the top-right of the graph. We can address this by making the points semi-transparent through the use of **alpha** in the geom_point bracket; by adjusting transparency, we can identify where there's a lot of observations with similar values.  
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() + 
+  aes(x = log_gdp_per_cap, y = lifeExp, size = pop) +
+  geom_point(alpha = .3)+
+  geom_smooth(method = "lm")
+```
+
+We can also extend this further by adding individual lines for each continent; is the relationship between GDP and life expectancy more-or-less the same in all five continents? 
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() + 
+  aes(x = log_gdp_per_cap, y = lifeExp, colour = continent) +
+  geom_point(alpha = .3)+
+  geom_smooth(method = "lm")
+```
+
+This is OK, but there's an issue in that the lines overlap somewhat. The approach that I'd generally advise when you're trying to convey as much information as this is to **facet** rather than get as much information on a single pane as possible. As before, we facet the graph with the facet_wrap command (and remember the **tilde**):
+
+```{r, eval = FALSE}
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() +
+  aes(x = log_gdp_per_cap, y = lifeExp) +
+  geom_point(alpha = .3)+
+  geom_smooth(method = "lm")+
+  facet_wrap(~ continent)
+```
+
+**However**. One major issue with the graphs so far is that they present data from across a long period of time in the same space, and don't draw attention to change over time. What if we wanted to draw a graph of the GDP and life expectancy in each continent in each year of data, rather than doing it country-by-country?  This involves using some of the same **tidyverse** techniques we looked at before. Let's throw the whole thing at the wall and see what sticks. 
+
+(There's a lot here, but it's all stuff you've seen before. You're about to get a task where I ask you to do something similar -- what does each step do?)
+
+```{r, eval = FALSE}
+gapminder %>% 
+  group_by(continent, year) %>% 
+  summarise(log_gdp_per_cap_sum = sum(log(gdpPercap)),
+            life_exp_sum = sum(lifeExp),
+            pop_sum = sum(as.numeric(pop)),
+            n_countries = n()) %>% 
+  mutate(mean_log_gdp_per_cap = log_gdp_per_cap_sum/n_countries,
+         mean_life_exp = life_exp_sum/n_countries,
+         mean_pop = pop_sum/n_countries) %>% 
+  ggplot() +
+  aes(x = mean_log_gdp_per_cap, 
+      y = mean_life_exp, 
+      label = year, 
+      colour = continent, 
+      size = mean_pop) +
+  geom_point()
+```
+
+**One last thing** (I know this is getting a bit much). This is beginning to look pretty interesting. However, you can see on the left hand side of the graph that something's up with the African observations: which observation is which year? There's a few different ways to add this information directly onto the graph, but I'm a big fan of geom_label_repel. This involves loading the separate ggrepel package. Here's how it works.
+
+```{r, eval = FALSE}
+library(ggrepel) # loading the ggrepel package
+gapminder %>% 
+  group_by(continent, year) %>% 
+  summarise(log_gdp_per_cap_sum = sum(log(gdpPercap)),
+            life_exp_sum = sum(lifeExp),
+            pop_sum = sum(as.numeric(pop)),
+            n_countries = n()) %>% 
+  mutate(mean_log_gdp_per_cap = log_gdp_per_cap_sum/n_countries,
+         mean_life_exp = life_exp_sum/n_countries,
+         mean_pop = pop_sum/n_countries) %>% 
+  ggplot()+
+  aes(x = mean_log_gdp_per_cap, 
+      y = mean_life_exp, 
+      label = year) +
+  geom_point(aes(size = mean_pop, colour = continent))+
+  geom_label_repel()
+```
+
+There's a couple of key differences here:
+
+- we've added another aesthetic mapping to the ggplot line, **label = year**. **Label** is another mapping, where we add information: here, this is based on the **year** variable.
+- We've moved **size** and **colour** into the aesthetic mappings for geom_point, rather than for geom_label_repel. (What happens if you change this?)
+
+Hopefully, you agree that this is more informative than the graph we were looking at before -- though there's an obvious issue with the number of labels we're looking at here. 
+
+### I doubt we'll get time for this, but look into the package
+
+How might we retain a bunch of this information, while making the graph comprehensible? **Animation**. 
+
+```{r, eval = FALSE}
+library(gganimate)
+
+gapminder %>% 
+  mutate(log_gdp_per_cap = log(gdpPercap)) %>% 
+  ggplot() + 
+  aes(x = log_gdp_per_cap, y = lifeExp, colour = continent, size = pop) +
+  geom_point(alpha = .3)+
+#  geom_smooth(method = "lm") +
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+```
+
+So, this looks pretty similar to what we had before. The difference is in the last few lines. 
+- **labs** we'll get to later (so it'll make sense when you're rereading this handout after today). 
+- **transition_time** is the key new thing. Transition means we're no longer thinking of graphics as static, but as things that change. And, here, we want our graphs to change based on time. 
+- **ease_aes** adjusts the transitions between frames. 
+
+gganimate is a really impressive package that we haven't got time to look through fully today. I really recommend you browse all the documentation around it, you can do loads with it.
+
+### Task!!
+
+Given what you've seen so far, I'd like you to:
+
+- use the **midwest** data
+- make a graph of the population density and % college-educated of each county, with size proportional to the number of people in each one, coloured by which state they're in
+- make a graph of the population density and % college-educated of each state, with size proportional to the number of people in each one
+- add labels to each state
+
+## Extending box plots, etc
+
+Remember box plots?
+
+There's a few different ways to show how distributions of continuous variables differ by categorical variables. Let's have a look at some of them here.
+
+Let's start by loading some data from the 2017 UK General Election, and drawing a simple graph. 
+
+(If you find yourself thinking "wait, hasn't there been a general election more recently? And weren't there several general elections before that, which I'm also interested in?", you might consider visiting [this link](https://commonslibrary.parliament.uk/research-briefings/cbp-8647/?doing_wp_cron=1590594719.0672159194946289062500))
+
+```{r, eval = FALSE}
+election <- read_csv("election2017.csv")
+
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  ggplot() +
+  aes(x = percent_tory, colour = country_name) +
+  geom_density()
+```
+
+OK, so what have we done here?
+- we've loaded the **election** data
+- we've generated a variable **percent_tory**, which is the fraction of Conservative votes out of all the valid votes cast
+- we've drawn a density curve of this variable, and coloured them in according to different countries
+- we've forgotten that the party system is different in Northern Ireland. Let's fix that.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = percent_tory, colour = country_name) +
+  geom_density()
+```
+
+As an alternative, let's do this with a histogram rather than a density curve.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = percent_tory, fill = country_name) +
+  geom_histogram()
+```
+
+This works less brilliantly. Because the default position adjustment here is *stack*, it's difficult to identify how the distributions vary across England, Scotland, and Wales. We can fix this by tweaking the position adjustment.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = percent_tory, fill = country_name) +
+  geom_histogram(position = "identity")
+```
+
+However, the graphs are now overlapping each other. As before, we can address this with the **alpha** command, making the histograms semi-transparent.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = percent_tory, fill = country_name) +
+  geom_histogram(position = "identity", alpha = .3)
+```
+
+Remember, we can also show distributions with box plots:
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = country_name, y = percent_tory) +
+  geom_boxplot()
+```
+
+and with violin plots:
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = country_name, y = percent_tory) +
+  geom_violin()
+```
+
+Violin plots are effectively density curves, rotated by 90 degrees and reflected in the mirror. (They have some alternative names that I'll leave to your imagination.) 
+These graphs all look OK; it's reasonably straightforward to figure out what's going on, and how the distributions look different from each other, as the Conservative vote in each of England, Scotland, and Wales is quite different. How would we compare distributions across more categories, and where the distributions aren't so different from one another? Let's start by revisiting this same question -- how the Conservative vote varies geographically -- and looking at the *regional* level rather than the *national* one.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = region_name, y = percent_tory) +
+  geom_violin() 
+```
+
+This doesn't really work; it's hard to effectively compare these distributions visually, partly because there's more categories than there were before, and partly because the distributions aren't radically different.
+
+There's a couple of alternatives you've seen before that might help. First, let's rank the regions according to their Conservative vote:
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes,
+         region_name = fct_reorder(region_name, percent_tory)) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(x = region_name, y = percent_tory) +
+  geom_violin()
+```
+
+and second, let's try faceting instead.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes,
+         region_name = fct_reorder(region_name, percent_tory)) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot()+
+  aes(x = percent_tory) +
+  geom_density()+
+  facet_wrap(~ region_name)
+```
+
+These are both improvements, but neither's brilliant. One alternative I'm very keen on is using **ridgelines** instead. This involves a dedicated package. We can load and implement it like so (again, you'll almost certainly have to install it first). Here, we'll be using the new geometric object **geom_density_ridgelines**.
+
+```{r, eval = FALSE}
+library(ggridges)
+
+election %>% 
+  mutate(percent_tory = con/valid_votes,
+         region_name = fct_reorder(region_name, percent_tory)) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot()+
+  aes(percent_tory, region_name) +
+  geom_density_ridges()
+```
+
+I think this is much easier to interpret. However, it could look better. Let's try colouring in the density curves so it's clearer how the distributions are different from each other.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes,
+         region_name = fct_reorder(region_name, percent_tory)) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot()+
+  aes(x = percent_tory, 
+             y = region_name,
+             fill = ..x..) +
+  geom_density_ridges_gradient()+
+  scale_fill_continuous()
+```
+
+There's some new things going on here:
+- we've added a new item in the aesthetic mappings, where **fill = ..x..**;
+- this is because **x** isn't an existing variable, but it's something that's been calculated in ggplot2. We surround it by double dots on either side to indicate this. (As you work through ggplot2, you'll see things surrounded by double dots more often.);
+- the geometric object's now geom_density_ridges_gradient. The gradient bit means we're colouring the density curves in consistently;
+- we've specified the scale for fill with scale_fill_continuous. scale_fill_continuous is the simplest way to do this, and gives us the default colour scheme for a continuous variable (dark to light blue); I'll show you some more colour schemes in due course.
+
+One last thing we can add: quartiles, so we can add some more information about the distributions.
+
+```{r, eval = FALSE}
+election %>% 
+  mutate(percent_tory = con/valid_votes) %>% 
+  filter(country_name != "Northern Ireland") %>% 
+  ggplot() +
+  aes(percent_tory, 
+             reorder(region_name, percent_tory),
+             fill = ..x..) +
+  geom_density_ridges_gradient(quantile_lines = TRUE, quantiles = 4)+
+  scale_fill_continuous()
+```
+
+We've done this by specifying some options in the geom_density_ridges_gradient bracket: specifying that we want quantile lines, and that we want a total of four quantiles. (What happens when you tweak this?)
+
+### Adding more data
+
+What if you want to draw a graph of what fraction of people live in social housing across different party-held constituencies? The data we've got doesn't contain a variable for how many people live in social housing in each constituency, so let's load some data that has that. (This data's from the 2011 census in England and Wales.) Let's then check what variables are in each data frame.
+
+```{r, eval = FALSE}
+tenure <- read_csv("tenure.csv")
+head(tenure)
+head(election)
+```
+
+OK, so we've got an ID variable that's common to both datasets. In **tenure** it's called **code**; in **election** it's called **ons_id**. In order to combine the datasets, it's helpful if the variables are called the same thing. So let's add a variable to **tenure** called **ons_id**, again using **mutate**.
+
+```{r, eval = FALSE}
+tenure <- tenure %>% 
+  rename(ons_id = code)
+```
+
+Now we've done this, we can merge the datasets, like so.
+
+```{r, eval = FALSE}
+both_things <- inner_join(tenure, election, id = ons_id)
+```
+
+What we've done here is use the **inner_join** command to merge datasets, specified what datasets we want to merge, and specified the variable that's common to both. 
+
+(Inner joins keep the cases consistent across both datasets. If you want to know more about different join types, Google some combination of "inner join", "outer join", "left join", and "right join". In a tidyverse context, add "dplyr".)
+
+Now, we can draw the graph.
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         first_party = fct_reorder(first_party, percent_social_rented)) %>% 
+  ggplot()+
+  aes(x = percent_social_rented, 
+             y = first_party, 
+             fill = ..x..) +
+  geom_density_ridges_gradient()+
+  scale_fill_continuous()
+```
+
+This looks OK, but we've got two bits of the graph missing content, **Green** and **Spk**. (Why is this?) 
+
+Let's deal with this by using the **filter** command.
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         first_party = fct_reorder(first_party, percent_social_rented)) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented, 
+      y = first_party,
+      fill = ..x..) +
+  geom_density_ridges_gradient()+
+  scale_fill_continuous()
+
+```
+
+### Task
+
+- how does the distribution of whether people own their houses with mortgages vary by regions of England and Wales?
+
+## Colouring in, tidying up
+
+Let's draw a graph of the percentage of households that are socially rented, and the percentage of the vote received by Labour in 2017, coloured by the party that won the seat overall, in each constituency of England and Wales.
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()
+```
+
+While the graphs we've been drawing so far have looked OK, they haven't been of the standard where we could put them in a publication, on a website, on a slide, etc. A big reason for this is that the axes have been consistently labelled with the name of the relevant variables; I understand what **percent_social_rented** means, but I shouldn't expect anyone else to. Let's tidy these up by adding some labels, with **labs**. 
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()+
+  labs(x = "% social rented",
+       y = "% voted Labour",
+       colour = "Party")
+```
+
+What we've done here is added labels to x, y, and colour. This means the thing's starting to look a bit better.
+
+We can add more and more things to the **labs** parenthesis. Here's how you add a title, subtitle, and caption, for example. (And, please, don't give your graphs boring titles. Tell your audience what the graphs show!)
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()+
+  labs(x = "% social rented",
+       y = "% voted Labour",
+       colour = "Party",
+       title = "Not many Tory constituencies with several social renters",
+       subtitle = "but more than I expected",
+       caption = "Data from the Electoral Commission and the 2011 Census")
+```
+
+Next, we might want to change the colour scheme. The ggplot2 defaults are pretty good (although not always colourblind-friendly), but there's an obvious issue here in that political parties in the UK are associated with particular colours. If you Google "Colours in R" (which I've done hundreds of times), you'll end up with a PDF with a list of all the colours you can use. (You can also manually specify RGBs.) Here's an example of how you can do that.
+
+```{r, eval = FALSE}
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()+
+  scale_color_manual(values = c("dodgerblue4",
+                                  "firebrick3",
+                                  "goldenrod2",
+                                  "forestgreen"))+
+  labs(x = "% social rented",
+       y = "% voted Labour",
+       colour = "Party")
+```
+
+So we've added a line **scale_color_manual** where we've specified that the colours we're using are going to hold values (values =), that they're going to hold a list of values (c), and those values each have names that R can look up (dodgerblue4, etc). When we run this, we've now got the colours we were looking for.
+
+(You'll note scale_colour_manual doesn't look a million miles away from scale_x_log10, which we saw before. Any time we change *any* scale in ggplot2, it's of this format - specifying that we're changing a scale, then *which* scale, then *how*.)
+
+This is the sort of thing we need to do when the variable we're colouring accompanies a particular colour scheme in real life. Most of the time, though, we're working with arbitrary colour schemes, where the most important thing's being able to distinguish between different categories. Different people have different preferences. And to look at how we can incorporate different preferences, let's go back to the Nobel Prize data.
+
+```{r, eval = FALSE}
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category)),
+      fill = category) +
+  geom_bar(position = "fill") 
+```
+
+And let's change the colour scheme using a scheme from *viridis*. (I very strongly recommend the viridis package -- I use it for almost everything I do that includes colour -- because it's designed to be sensitive to a range of different colour perceptions. A lot of people are colourblind, a lot more people than you might think are colourblind in ways that aren't red-green colourblind, so if you're making graphics that can't be read by colourblind people, that's a lot of people to whom your graphics are inaccessible)
+
+```{r, eval = FALSE}
+
+nobel %>% 
+  mutate(birth_country_brackets = 
+           str_extract(birth_country, "(?<=\\().*(?=\\))")) %>%
+  mutate(birth_country_clean = 
+           if_else(is.na(birth_country_brackets),
+                   birth_country,
+                   birth_country_brackets)) %>% 
+  mutate(birth_country_clean = 
+           fct_recode(birth_country_clean,
+                      "United Kingdom" = 
+                        "Scotland",
+                      "United Kingdom" = 
+                        "Northern Ireland")) %>% 
+  mutate(birth_continent = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "continent")) %>% 
+  mutate(birth_region = 
+           countrycode(birth_country_clean,
+                       origin = "country.name",
+                       destination = "un.regionsub.name")) %>% 
+  group_by(birth_region) %>% 
+  mutate(n_in_region = 
+           n()) %>% 
+  mutate(eventual_category = 
+           if_else(n_in_region > 50,
+                   birth_region,
+                   birth_continent)) %>% 
+  mutate(eventual_category = 
+           fct_recode(eventual_category,
+                      "Southern Europe" = 
+                        "Europe",
+                      "Central & South America" = 
+                        "Americas")) %>% 
+  ungroup() %>% 
+  filter(!is.na(birth_region)) %>% 
+  ggplot() +
+  aes(y = fct_rev(fct_infreq(eventual_category)),
+      fill = category) +
+  geom_bar(position = "fill") +
+  scale_fill_viridis_d()
+```
+
+(There's absolutely loads of colour palettes available. Beyond viridis, I recommend the Beyonce package; lots of people also use the Wes Anderson package.)
+
+Two more things to flag up. First: while we've been playing around with the colour schemes of our geometric objects, there's other things in our plots that we might like to tweak. The grey background that ggplot2 defaults to isn't for everyone, for example. While it's possible to tweak these things bit-by-bit, I generally recommend some prepackaged themes. Here's two examples.
+
+```{r, eval = FALSE}
+library(scales)
+
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()+
+  scale_color_manual(values = c("dodgerblue4",
+                                  "firebrick3",
+                                  "goldenrod2",
+                                  "forestgreen"))+
+  labs(x = "% social rented",
+       y = "% voted Labour",
+       colour = "Party") +
+  theme_minimal() +
+  scale_x_continuous(labels = percent) +
+  scale_y_continuous(labels = percent)
+```
+
+In this instance, **theme_minimal()** comes preloaded with ggplot2. I like it, and I find graphics that use it easier to interpret. (You'll also see I've taken the liberty of using the **scales** package to allow the axis ticks to communicate percentages more straightforwardly.)
+
+Another package, **ggthemes**, has several different preloaded themes, including several which are used in other media. Let's look at an example here.
+
+```{r, eval = FALSE}
+library(ggthemes)
+
+both_things %>% 
+  mutate(percent_social_rented = 
+           rented_social/households,
+         percent_labour = 
+           lab/valid_votes) %>% 
+  filter(first_party != "Green" &
+           first_party != "Spk") %>% 
+  ggplot()+
+  aes(x = percent_social_rented,
+             y = percent_labour,
+             colour = first_party) +
+  geom_point()+
+  scale_color_manual(values = c("dodgerblue4",
+                                  "firebrick3",
+                                  "goldenrod2",
+                                  "forestgreen"))+
+  labs(x = "% social rented",
+       y = "% voted Labour",
+       colour = "Party",
+       title = "Not many Tory constituencies with several social renters",
+       subtitle = "but more than I expected",
+       caption = "Data from the Electoral Commission and the 2011 Census")+
+  theme_economist()
+```
+
+Again, not for everyone, but a lot of people really like this style of presentation. You can look into the other themes available by typing theme_ and then playing around with **tab completion**. (If you ever use **theme_excel**, you're a monster.)
+
+Another option is **bbplot**, which is used by the BBC's in-house data team to generate most (all?) of the graphics that you'll see on and around BBC News.
+
+Finally, you'll generally want to be able to save your plots. I haven't gone into the minutiae of setting the working directory in this session -- it's boring, it's important, you should have covered it before this session, really -- but I'll assume you know how to do it, and you know where you are. 
+
+All you have to do to save your plots is use the **ggsave** command, and specify what you want your plot to be called. By default, it'll save whichever plot was drawn most recently, at 7.79 inches by 6.47 inches. Let's do so.
+
+```{r, eval = FALSE}
+ggsave("first plot.png")
+```
+
+Here, I've saved the plot as a portable network graphic file; R can write to more-or-less any image format (including vector formats), and you can save to whatever you prefer. You can also specify the dimensions of the plot manually, like so:
+
+```{r, eval = FALSE}
+ggsave("first plot.png", width = 10, height = 5)
+```
+
+The other thing you can do is use **RMarkdown**. If you're putting together reports, such as the thing that's required for the assessment for this module, you don't need to export graphics at all; you can integrate your code into your reports, and if you tweak them, the rest of the report will update automatically. Again, I recommend this highly. 
+
+### Task!
+
+- take **two** of the graphs you've drawn so far today
+- customise them
+- save them
+- show me
+
+## Let's visualise some models
+
+Let's load some data that includes loads of information about the different Local Authorities in Britain (sorry, Northern Ireland), including voting data from the 2016 referendum.
+
+```{r, eval = FALSE}
+brexit_stuff <- read_csv("brexit_stuff.csv")
+```
+
+Now, let's fit a regression that predicts the % of people voting Leave in each local authority, according to the % of people with degrees, the % of people with no qualifications, the % of people reporting bad health in the 2011 census, and dummy variables for country. And let's look at it.
+
+```{r, eval = FALSE}
+brexit_model <- lm(PCTLEAVE ~ 
+                     DEGREES + 
+                     NOQUALS + 
+                     BADHEALTH +
+                     Country, data = brexit_stuff)
+summary(brexit_model)
+```
+
+(What does this show?)
+
+Now, let's get some regression diagnostics.
+
+```{r, eval = FALSE}
+plot(brexit_model)
+```
+
+(What do they show?)
+
+Here, we're using the **plot** command (which exists in base R) rather than ggplot2, because by default plotting a model gives us all these diagnostic plots. For me, this tends to be fine, as I've never published a series of plots of regression diagnostics -- I run them for my own benefit so I have a sense of what's going on. However, if you're generating them for an audience, it's worth looking into how you can do them in ggplot2, so that you can tidy them up based on what we've already seen. It involves a bit more fiddling, but it's not insurmountable. Here's how we do it (with some bonus extra plots):
+
+```{r, eval = FALSE}
+ggplot(data = brexit_model) +
+  aes(x = .fitted, y = .resid) +
+  geom_point()
+
+ggplot(data = brexit_model) +
+  aes(x = qqnorm(.stdresid)[[1]], y = .stdresid) +
+  geom_point()
+
+ggplot(data = brexit_model) +
+  aes(x = .fitted, y = sqrt(abs(.stdresid))) +
+  geom_point()
+
+ggplot(data = brexit_model) +
+  aes(x = seq_along(.cooksd), y = .cooksd) +
+  geom_col()
+
+ggplot(data = brexit_model)+ 
+  aes(x = .hat, y = .stdresid) +
+  geom_point()
+
+ggplot(data = brexit_model) +
+  aes(x = .hat, y = .stdresid) +
+  geom_point(aes(size = .cooksd))
+
+ggplot(brexit_model)+
+  aes(x = .hat, y = .cooksd) +
+  geom_point()+
+  geom_smooth()
+```
+
+You can then tidy up any of these plots with whatever formatting you want.
+
+### Let's visualise some model *results*
+
+So we've managed to visualise some model diagnostics; this is helpful, but it's not something we're likely to publish.
+
+One thing we might think about publishing is a visual representation of our models, as opposed to tables. It's common to see papers that involve great use of data visualisation for the exploratory part of the process, but the model results themselves are presented as a table. Some tables look great (and I recommend the **stargazer** package for well-formatted tables that summarise models), but it's worth being aware that models can be reported as graphics as well. (I've done this myself.)
+
+The easiest way to do this is with the **coefplot** package -- there's other options, but this is a good starting point, particularly as it works well with ggplot2. Let's load it, and visualise our existing model.
+
+```{r, eval = FALSE}
+library(coefplot)
+coefplot(brexit_model)
+```
+
+This looks OK. It gives us 95% confidence intervals for each of our variables, with coefficient sizes on the x-axis, and variables on the y-axis. (If you're presenting graphics like this, it's worth thinking about rescaling your variables so that you can draw meaningful comparisons between coefficients.) However, as with ggplot2 in general, we can tidy it up: let's do so.
+
+```{r, eval = FALSE}
+coefplot(brexit_model)+
+  labs(x = "Coefficient size",
+       y = "Variable", 
+       title = "Predictors of % voting Brexit, by LA",
+       subtitle = "Data from the Electoral Commission")+
+  theme_bw()
+```
+
+One issue with this is that while our axis labels are now better, we're stuck with the original variable names on the y-axis. Let's change that.
+
+```{r, eval = FALSE}
+coefplot(brexit_model, 
+         newNames = c(CountryW = "Wales (v England)",
+                      CountryS = "Scotland (v England)",
+                      BADHEALTH = "Fraction reporting bad health",
+                      NOQUALS = "Fraction with no qualifications",
+                      DEGREES = "Fraction with degrees"))+
+  labs(x = "Coefficient size",
+       y = "Variable", 
+       title = "Predictors of % voting Brexit, by LA",
+       subtitle = "Data from the Electoral Commission")+
+  theme_bw()
+``` 
+
+What we've done here is added something in the original coefplot bracket: **newnames**. In the bracket, we're pairing up the old names with the new names -- old names on the left, followed by an equals sign (=), followed by the new names on the right, in quotes.
+
+And that's visualising models! Here, we've just visualised regression, specifically OLS. **coefplot** allows us to plot different kinds of regressions, but there's all sorts of other models you might want to visualise; it's worth thinking about how you might do this (and Google around, you're unlikely to be the first person to run into this problem).
+
+### Sidebar we probably won't cover, but that's potentially useful
+
+You don't have to use coefplot. If you'd rather continue using ggplot2 in the way that you have been doing, and your only problem is that your results from lm (or whatever other command for modelling you've been using) aren't a data frame or a tibble, you can instead change that situation. This involves the **broom** package, for tidying **models** (rather than tidying **data**, for which we'd usually use tidyr or dplyr). All we're going to do is wrap the model result in the tidy() command, then proceed as normal.
+
+For example:
+
+```{r, eval = FALSE}
+library(broom)
+
+tidy(brexit_model) %>% 
+  mutate(term = fct_recode(term,
+                           "Intercept" = 
+                             "(Intercept)",
+                           "% with degrees" = 
+                             "DEGREES",
+                           "% with no qualifications" = 
+                             "NOQUALS",
+                           "% with bad health" = 
+                             "BADHEALTH",
+                           "Scotland" = 
+                             "CountryS",
+                           "Wales" = 
+                             "CountryW")) %>% 
+  ggplot() +
+  aes(y = term,
+      x = estimate,
+      xmin = estimate - 1.96*std.error,
+      xmax = estimate + 1.96*std.error) +
+  geom_point() +
+  geom_pointrange()  +
+  geom_vline(xintercept = 0,
+             linetype = "dashed")
+```
+
+### Now you
+
+- Please visualise a model.
+
+## Try pulling some web data
+
+Let's have a look at some UK petitions data.
+
+The data exists in **json** format. This is (at least partly) it covers a few different bits of information, rather than just being a csv of cases and variables -- it's not rectangular. 
+
+However, if we want to understand where different people are signing different petitions, we need to pull out the bit of the data that looks at that. Let's load the **jsonlite** package, and have a look at some petitions now.
+
+```{r, eval = FALSE}
+library(jsonlite)
+
+implement_lockdown <- fromJSON("https://petition.parliament.uk/petitions/301397.json")
+implement_lockdown <- implement_lockdown$data$attributes$signatures_by_constituency
+head(implement_lockdown)
+
+reimburse_students <- fromJSON("https://petition.parliament.uk/petitions/302855.json")
+reimburse_students <- reimburse_students$data$attributes$signatures_by_constituency
+head(reimburse_students)
+```
+
+(I've chosen these petitions fairly arbitrarily. Feel free to use whichever you like.)
+
+In each case, I've done three things:
+
+- downloaded the data with the fromJSON command, as opposed to read.csv that you've seen before; that's because we need to use the command that matches the file type we're using
+- dug out the **signatures_by_constituency** bit of the data. The series of dollar signs ($) is because I'm digging out nested parts within other nested parts. (I'll explain this)
+- I've checked it looks OK, using the **head** command
+
+As before, I've then changed some variable names (and in one case, discarded most of the variables as they're duplicated). This is so I can merge the datasets together, but also combine them with the **elections** data from earlier to find out not how these fit together, but how they fit together with other variables as well.
+
+```{r, eval = FALSE}
+implement_lockdown <- mutate(implement_lockdown, 
+                             ons_id = ons_code,
+                              implement_lockdown = signature_count)
+
+reimburse_students <- mutate(reimburse_students, 
+                              ons_id = ons_code,
+                              reimburse_students = signature_count) %>% 
+  select(ons_id, reimburse_students)
+
+petitions <- inner_join(reimburse_students, implement_lockdown, id = ons_code)
+petitions_2 <- inner_join(petitions, election, id = ons_code)
+head(petitions_2)
+```
+
+I can then compare signatures on each of these petitions:
+
+```{r, eval = FALSE}
+petitions_2 %>% 
+  mutate(lockdown_percent = implement_lockdown/electorate,
+          students_percent = reimburse_students/electorate) %>% 
+ggplot()+
+  aes(x = lockdown_percent, y = students_percent) +
+  geom_point()
+```
+
+and I can can see how signatures on a given petition varies by the percentage voting Tory in each constituency, and colour it by country:
+
+```{r, eval = FALSE}
+petitions_2 %>% 
+  mutate(lockdown_percent = implement_lockdown/electorate,
+          students_percent = reimburse_students/electorate,
+        tory_percent = con/valid_votes) %>% 
+  ggplot()+
+  aes(x = lockdown_percent, y = students_percent, colour = country_name) +
+  geom_point()+
+  scale_colour_viridis_d()
+```
+
+One last thing this example raises. While fractions are fine and accurate on axes, they can also be fairly hard to understand to non-expert users. We saw the  **scales** package earlier; let's revisit:
+
+```{r, eval = FALSE}
+library(scales)
+
+petitions_2 %>% 
+  mutate(lockdown_percent = implement_lockdown/electorate,
+          students_percent = reimburse_students/electorate,
+        tory_percent = con/valid_votes) %>% 
+  ggplot()+
+  aes(x = lockdown_percent, y = students_percent, colour = country_name) +
+  geom_point()+
+  scale_colour_viridis_d() +
+  scale_y_continuous(labels = percent) +
+  scale_x_continuous(labels = percent) 
+```
+
+(The **scales** package does loads of other things; this is just one.)
+
+In practice, this is how my experience of data viz tends to go: find an interesting data set, pick up a new package that's relevant in some way (here, I needed it in order to load the data in the first place), merge it with some data I already have, and do some exploratory scatterplots. However, here (and in many other settings) it's possible to go much further.
+
+### Now you
+
+- find some interesting petitions
+- load them into R
+- show me some interesting patterns: 
+- one based on two petitions
+- one based on a petition and some electoral or census data
+- make the graphs look good
